@@ -56,8 +56,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DemoScreen(modifier: Modifier = Modifier) {
     var currentIndex by remember { mutableStateOf(0) }
+    var answered by remember { mutableStateOf(false) }
+    var correctCount by remember { mutableStateOf(0) }
 
     val currentQuestion = questions[currentIndex]
+    val isLastQuestion = currentIndex == questions.size - 1
 
     Column(
         modifier = modifier
@@ -79,19 +82,36 @@ fun DemoScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(bottom = 30.dp)
         )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(onClick = {
-                // Логика ответа "True" — в следующем коммите
-            }) {
-                Text("True")
+        // Кнопки True / False — видны только до ответа
+        if (!answered) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(onClick = {
+                    if (currentQuestion.answer) correctCount++
+                    answered = true
+                }) {
+                    Text("True")
+                }
+                Button(onClick = {
+                    if (!currentQuestion.answer) correctCount++
+                    answered = true
+                }) {
+                    Text("False")
+                }
             }
+        }
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        // Кнопка Next — видна после ответа, но скрыта после последнего вопроса
+        if (answered && !isLastQuestion) {
             Button(onClick = {
-                // Логика ответа "False" — в следующем коммите
+                currentIndex++
+                answered = false
             }) {
-                Text("False")
+                Text("Next")
             }
         }
     }
