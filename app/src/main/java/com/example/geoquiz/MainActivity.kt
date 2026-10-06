@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -58,6 +59,7 @@ fun DemoScreen(modifier: Modifier = Modifier) {
     var currentIndex by remember { mutableStateOf(0) }
     var answered by remember { mutableStateOf(false) }
     var correctCount by remember { mutableStateOf(0) }
+    var showDialog by remember { mutableStateOf(false) }
 
     val currentQuestion = questions[currentIndex]
     val isLastQuestion = currentIndex == questions.size - 1
@@ -105,7 +107,7 @@ fun DemoScreen(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        // Кнопка Next — видна после ответа, но скрыта после последнего вопроса
+        // Кнопка Next — после ответа, но не на последнем вопросе
         if (answered && !isLastQuestion) {
             Button(onClick = {
                 currentIndex++
@@ -114,6 +116,29 @@ fun DemoScreen(modifier: Modifier = Modifier) {
                 Text("Next")
             }
         }
+
+        // На последнем вопросе после ответа — кнопка показа результата
+        if (answered && isLastQuestion) {
+            Button(onClick = { showDialog = true }) {
+                Text("Показать результат")
+            }
+        }
+    }
+
+    // Всплывающее окно с результатом
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Результат") },
+            text = {
+                Text("Правильных ответов: $correctCount из ${questions.size}")
+            },
+            confirmButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }
 
